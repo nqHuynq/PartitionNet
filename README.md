@@ -95,24 +95,32 @@ pip install -e .
 
 ## 🚀 Quickstart
 
-### Python API
+### Python API (Running Inference with Pretrained Weights)
+
+Trọng số tốt nhất đã được huấn luyện sẵn và lưu tại `results/pnet_v28_eq_best.pth`. Bạn có thể tải và suy luận trực tiếp:
 
 ```python
 import torch
 from partitionnet import PartitionNetEq
+from partitionnet.utils.metrics import decode_topos
 from partitionnet.utils.invariance import check_permutation_invariance
 
-# Instantiate model
-model = PartitionNetEq(window=2048)
+# 1. Khởi tạo mô hình & nạp trọng số đã huấn luyện (Pretrained weights)
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+model = PartitionNetEq(window=2048).to(device)
+model.load_state_dict(torch.load("results/pnet_v28_eq_best.pth", map_location=device))
 model.eval()
 
-# Synthetic input: (Batch=2, Chunks=2, Taxa=4, Window=2048)
-x = torch.randint(0, 4, (2, 2, 4, 2048), dtype=torch.uint8)
+# 2. Đầu vào giả lập: (Batch=2, Chunks=2, Taxa=4, Window=2048)
+x = torch.randint(0, 4, (2, 2, 4, 2048), dtype=torch.uint8).to(device)
 
-# Forward pass
-logits = model(x)  # Shape: (2, 4)
+# 3. Dự đoán phân hoạch và giải mã topology (1, 2, hoặc 3)
+with torch.no_grad():
+    logits = model(x)                     # Shape: (2, 4)
+    pred_topos = decode_topos(logits.cpu().numpy())
+    print(f"Predicted Quartet Topologies: {pred_topos}")
 
-# Verify permutation equivariance
+# 4. Kiểm tra tính đồng biến hoán vị
 worst_diff, agreement = check_permutation_invariance(model, x)
 print(f"Max logit diff under permutations: {worst_diff:.3e}")
 print(f"Topology agreement: {agreement * 100:.1f}%")
@@ -162,15 +170,37 @@ $$\mathcal{L} = \min\big(\text{softplus}(-\mathbf{y} \cdot \mathbf{z}), \text{so
 
 Dưới đây là kết quả thực nghiệm thực tế thu được từ log kiểm thử (test evaluation log) của bản chạy **V28** trong notebook:
 
+### 1. Tổng quan hiệu năng trên tập Test (51,241 mẫu)
+
 | Metric | Anchor Model (v27) | PartitionNet (v28-eq-vector) | Ghi chú |
 |:---|:---:|:---:|:---|
 | **Topology Accuracy** | 82.04% | **82.14%** (+0.10%) | Độ chính xác giải mã cây quartet trên tập test |
 | **Exact Match** | — | **0.7831** | Tỷ lệ khớp hoàn toàn vector nhãn bipolar |
 | **Hamming Loss** | — | **0.1087** | Khoảng cách Hamming trên các bit phân hoạch |
 | **Best Validation Accuracy** | — | **82.08%** (Ep 18) | Độ chính xác cao nhất trên tập Validation |
-| **Permutation Topo Agreement** | — | **100.00%** | Độ đồng thuận topology qua toàn bộ 24 hoán vị taxa ($4!$) |
-| **Permutation Max Logit Diff (`max \|z'-z[perm]\|`)** | — | **2.027e-05** | Sai số xấp xỉ số thực cực nhỏ, đạt tính đồng biến thực tế |
-| **Topo Accuracy over all 24 Permutations** | — | **80.08%** | Độ chính xác trung bình khi quét qua cả 24 hoán vị |
+| **Permutation Topo Agreement** | — | **100.00%** | Đồng thuận 100% kết quả giải mã qua cả 24 hoán vị taxa ($4!$) |
+| **Permutation Max Logit Diff** | — | **2.027e-05** | Sai số xấp xỉ số thực cực nhỏ, đạt tính đồng biến thực tế |
+| **Topo Accuracy over all 24 Perms** | — | **80.08%** | Độ chính xác trung bình khi quét qua cả 24 hoán vị |
+
+### 2. Chi tiết hiệu năng từng Topology (Classification Report)
+
+Tập test gồm 51,241 mẫu phân bố đồng đều giữa 3 hình thái cây unrooted quartet:
+
+| Topology | Cấu trúc phân hoạch | Precision | Recall | F1-Score | Support (Số mẫu) |
+|:---|:---:|:---:|:---:|:---:|:---:|
+| **Topology 1** | $(t_1, t_2) \mid (t_3, t_4)$ | **82.36%** | **82.27%** | **82.31%** | 17,064 |
+| **Topology 2** | $(t_1, t_3) \mid (t_2, t_4)$ | **81.84%** | **81.91%** | **81.87%** | 17,095 |
+| **Topology 3** | $(t_1, t_4) \mid (t_2, t_3)$ | **82.21%** | **82.24%** | **82.23%** | 17,082 |
+| **Macro Average** | — | **82.14%** | **82.14%** | **82.14%** | 51,241 |
+| **Weighted Average** | — | **82.14%** | **82.14%** | **82.14%** | 51,241 |
+
+### 3. Biểu đồ huấn luyện & Ma trận nhầm lẫn
+
+<div align="center">
+  <img src="results/training_curves.png" alt="Training Curves" width="85%">
+  <br><br>
+  <img src="results/confusion_matrix.png" alt="Confusion Matrix" width="55%">
+</div>
 
 ---
 

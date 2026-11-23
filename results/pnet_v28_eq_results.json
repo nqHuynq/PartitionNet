@@ -1,0 +1,46 @@
+{
+    "experiment": "pnet-v27-exp11-tee-sum-attn",
+    "stage_range": "Epoch 25 -> 35",
+    "pass0_exact_match": 0.7831424054955992,
+    "pass0_hamming_loss": 0.1086971370582151,
+    "pass0_topo_acc": 0.8213735094943502,
+    "perm_max_logit_diff": 2.0265579223632812e-05,
+    "perm_topology_agreement": 1.0,
+    "perm_topo_acc_all24": 0.80078125,
+    "delta_vs_v27_anchor": 0.09735094943501554,
+    "best_epoch": 18,
+    "best_val_acc": 0.8208400614774032,
+    "classification_report": {
+        "Topo 1": {
+            "precision": 0.823584628923438,
+            "recall": 0.822667604313174,
+            "f1-score": 0.8231258612096514,
+            "support": 17064.0
+        },
+        "Topo 2": {
+            "precision": 0.81839967268689,
+            "recall": 0.8190699034805499,
+            "f1-score": 0.8187346509180213,
+            "support": 17095.0
+        },
+        "Topo 3": {
+            "precision": 0.8221454907239422,
+            "recall": 0.8223861374546306,
+            "f1-score": 0.8222657964821914,
+            "support": 17082.0
+        },
+        "accuracy": 0.8213735094943502,
+        "macro avg": {
+            "precision": 0.8213765974447567,
+            "recall": 0.8213745484161182,
+            "f1-score": 0.821375436203288,
+            "support": 51241.0
+        },
+        "weighted avg": {
+            "precision": 0.8213750665498002,
+            "recall": 0.8213735094943502,
+            "f1-score": 0.8213741513365052,
+            "support": 51241.0
+        }
+    }
+}

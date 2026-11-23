@@ -23,19 +23,30 @@ wheels/
 .installed.cfg
 *.egg
 
-# PyTorch checkpoints and model outputs
-*.pth
+# PyTorch checkpoints and model outputs (generic)
 *.pt
-*.npz
-*.csv
-*.json
 outputs/
 /kaggle/working/
 
-# Datasets and large binary files
+# Allow tracking curated results & pretrained weights in results/
+!results/
+!results/**
+
+# Large Binary & Data Files
 *.h5
 *.hdf5
 data/
+
+# Specific ignores outside results
+*.pth
+*.npz
+*.csv
+*.json
+!results/*.pth
+!results/*.npz
+!results/*.csv
+!results/*.json
+!results/*.png
 
 # IDE and OS
 .vscode/
