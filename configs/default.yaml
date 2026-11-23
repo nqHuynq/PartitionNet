@@ -1,0 +1,36 @@
+# Default Configuration for PartitionNet
+model:
+  embed_dim: 16
+  dim: 32
+  window_size: 2048
+  center: true
+  dropout: 0.3
+
+loss:
+  lambda_penalty: 0.5
+  temperature: 3.0
+  lambda_pair: 0.5
+
+training:
+  seed: 9999
+  max_epochs: 35
+  patience: 7
+  accum_steps: 16
+  max_lr: 0.0001
+  weight_decay: 0.001
+  pct_start: 0.1
+  ram_safety_limit: 90.0
+  num_workers: 0
+  
+  # Bucketing & Batching
+  max_chunks_limit: 50
+  chunk_buckets: [4, 8, 16, 24, 32, 50]
+  max_batch_size_train: 32
+  max_chunks_per_batch_train: 32
+  max_batch_size_eval: 64
+  max_chunks_per_batch_eval: 64
+
+paths:
+  base_h5_path: "./data/IQNet_Numeric_H5"
+  num_train_parts: 8
+  output_dir: "./outputs"
