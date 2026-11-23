@@ -160,13 +160,17 @@ $$\mathcal{L} = \min\big(\text{softplus}(-\mathbf{y} \cdot \mathbf{z}), \text{so
 
 ## 🔬 Benchmark Results
 
-| Metric | Anchor Model (v27) | PartitionNet (v28-eq-vector) |
-|:---|:---:|:---:|
-| **Topology Accuracy** | 82.04% | **83.18%** (+1.14%) |
-| **Exact Match** | 0.8170 | **0.8295** |
-| **Hamming Loss** | 0.0915 | **0.0852** |
-| **Permutation Topo Agreement** | ~85.2% | **100.00%** |
-| **Permutation Equivariance Error** | > 1.2e-1 | **< 1e-6 (Exact)** |
+Dưới đây là kết quả thực nghiệm thực tế thu được từ log kiểm thử (test evaluation log) của bản chạy **V28** trong notebook:
+
+| Metric | Anchor Model (v27) | PartitionNet (v28-eq-vector) | Ghi chú |
+|:---|:---:|:---:|:---|
+| **Topology Accuracy** | 82.04% | **82.14%** (+0.10%) | Độ chính xác giải mã cây quartet trên tập test |
+| **Exact Match** | — | **0.7831** | Tỷ lệ khớp hoàn toàn vector nhãn bipolar |
+| **Hamming Loss** | — | **0.1087** | Khoảng cách Hamming trên các bit phân hoạch |
+| **Best Validation Accuracy** | — | **82.08%** (Ep 18) | Độ chính xác cao nhất trên tập Validation |
+| **Permutation Topo Agreement** | — | **100.00%** | Độ đồng thuận topology qua toàn bộ 24 hoán vị taxa ($4!$) |
+| **Permutation Max Logit Diff (`max \|z'-z[perm]\|`)** | — | **2.027e-05** | Sai số xấp xỉ số thực cực nhỏ, đạt tính đồng biến thực tế |
+| **Topo Accuracy over all 24 Permutations** | — | **80.08%** | Độ chính xác trung bình khi quét qua cả 24 hoán vị |
 
 ---
 
